@@ -1,5 +1,6 @@
 const express = require("express");
 const User = require("../models/user");
+const { updateUserProfile, updateUserAvatar } = require("../controllers/user");
 
 const router = express.Router();
 
@@ -43,7 +44,7 @@ router.post("/", (req, res, next) => {
     });
 });
 
-router.patch('/me', updateUserProfile);
-router.patch('/me/avatar', updateUserAvatar);
+router.patch("/me", updateUserProfile);
+router.patch("/me/avatar", updateUserAvatar);
 
 module.exports = router;
