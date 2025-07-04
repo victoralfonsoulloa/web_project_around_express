@@ -21,11 +21,15 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndDelete(req.params.cardId)
-    .orFail()
+    .orFail(() => {
+      const error = new Error('No card found with that id');
+      error.statusCode = 404;
+      throw error;
+    })
     .then((card) => res.json(card))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        return res.status(404).json({ message: 'Card not found' });
+      if (err.statusCode === 404) {
+        return res.status(404).json({ message: err.message });
       }
       if (err.name === 'CastError') {
         return res.status(400).json({ message: 'Invalid card ID' });
