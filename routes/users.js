@@ -43,4 +43,7 @@ router.post("/", (req, res, next) => {
     });
 });
 
+router.patch('/me', updateUserProfile);
+router.patch('/me/avatar', updateUserAvatar);
+
 module.exports = router;
