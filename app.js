@@ -28,9 +28,19 @@ app.use((req, res) => {
   res.status(404).json({ message: "Requested resource not found" });
 });
 
-// 500 error handler
-app.use((err, req, res) => {
-  res.status(500).json({ message: "An error has occurred on the server" });
+// 500 error handler with custom logic
+app.use((err, req, res, next) => {
+  if (err.name === 'ValidationError') {
+    return res.status(400).json({ message: 'Invalid data' });
+  }
+  if (err.name === 'CastError') {
+    return res.status(400).json({ message: 'Invalid ID format' });
+  }
+  if (err.name === 'DocumentNotFoundError') {
+    return res.status(404).json({ message: 'Resource not found' });
+  }
+  // Default to 500
+  return res.status(500).json({ message: 'An error has occurred on the server' });
 });
 
 app.listen(PORT, () => {
