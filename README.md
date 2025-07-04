@@ -95,5 +95,4 @@ npm run lint
 ## Notes
 
 - Data is stored in MongoDB using Mongoose models.
-- This project is for educational purposes and does not use a database.
 - Feel free to extend the API or refactor the code for practice!
