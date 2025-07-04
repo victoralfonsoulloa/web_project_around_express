@@ -1,25 +1,42 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
+const User = require('../models/user');
 
 const router = express.Router();
 
-const users = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '../data/users.json')),
-);
-
 // Route to get all users
-router.get('/', (req, res) => {
-  res.json(users);
+router.get('/', (req, res, next) => {
+  User.find({})
+    .then((users) => res.json(users))
+    .catch(next);
 });
 
 // Route to get a user by ID
-router.get('/:id', (req, res) => {
-  const user = users.find((u) => u._id === req.params.id);
-  if (!user) {
-    return res.status(404).json({ message: 'User ID not found' });
-  }
-  return res.json(user);
+router.get('/:id', (req, res, next) => {
+  User.findById(req.params.id)
+    .orFail()
+    .then((user) => res.json(user))
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      if (err.name === 'CastError') {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      return next(err);
+    });
+});
+
+// Route to create a user
+router.post('/', (req, res, next) => {
+  const { name, about, avatar } = req.body;
+  User.create({ name, about, avatar })
+    .then((user) => res.status(201).json(user))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).json({ message: 'Invalid user data' });
+      }
+      return next(err);
+    });
 });
 
 module.exports = router;
