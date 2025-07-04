@@ -28,7 +28,7 @@ app.use((req, res) => {
   res.status(404).json({ message: "Requested resource not found" });
 });
 
-// 500 error handler with custom logic
+// Error handler with custom logic
 app.use((err, req, res, next) => {
   if (err.name === 'ValidationError') {
     return res.status(400).json({ message: 'Invalid data' });
